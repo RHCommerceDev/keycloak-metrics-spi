@@ -178,7 +178,14 @@ public final class PrometheusExporter {
     public void recordRegistrationError(final Event event) {
         final String provider = getIdentityProvider(event);
 
-        totalRegistrationsErrors.labels(event.getRealmId(), provider, event.getError(), event.getClientId()).inc();
+        String clientId = event.getClientId();
+        if (clientId == null) {
+            clientId = "UNKNOWN";
+        }
+        logger.infof("Recording registration error event: realm=%s provider=%s error=%s clientId=%s",
+            event.getRealmId(), provider, event.getError(), event.getClientId());
+
+        totalRegistrationsErrors.labels(event.getRealmId(), provider, event.getError(), clientId).inc();
     }
 
     /**
@@ -189,7 +196,14 @@ public final class PrometheusExporter {
     public void recordLoginError(final Event event) {
         final String provider = getIdentityProvider(event);
 
-        totalFailedLoginAttempts.labels(event.getRealmId(), provider, event.getError(), event.getClientId()).inc();
+        String clientId = event.getClientId();
+        if (clientId == null) {
+            clientId = "UNKNOWN";
+        }
+        logger.infof("Recording login error event: realm=%s provider=%s error=%s clientId=%s",
+            event.getRealmId(), provider, event.getError(), event.getClientId());
+
+        totalFailedLoginAttempts.labels(event.getRealmId(), provider, event.getError(), clientId).inc();
     }
 
     /**
